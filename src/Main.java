@@ -25,7 +25,34 @@ public class Main {
         g.dfs(users.get(0).getId());
         System.out.println();
         g.bfs(users.get(0).getId());
+        System.out.println();
+        List<Friend> friends = generateFriend(edges);
+//        for(Friend friend: friends)
+//            System.out.println(friend);
     }
+    public static List<Friend> generateFriend(Map<UUID, List<UUID>> edges){
+        List<Friend> friends = new ArrayList<>();
+        UUID subscriberId;
+        UUID userId;
+        for(Map.Entry<UUID, List<UUID>> entry :edges.entrySet()) {
+            subscriberId = entry.getKey();
+            for(int i =0; i<entry.getValue().size(); i++){
+                userId = entry.getValue().get(i);
+                if(keyContainsValue(edges, userId, subscriberId))
+                    friends.add(new Friend(subscriberId, userId, true));
+                else
+                    friends.add(new Friend(subscriberId, userId, false));
+            }
+        }
+        return friends;
+    }
+    public static boolean keyContainsValue(Map<UUID, List<UUID>> edges,
+                                           UUID userId, UUID subscriberId){
+        return edges.entrySet().stream()
+                .anyMatch((entry)-> entry.getKey().equals(userId) &&
+                        entry.getValue().contains(subscriberId));
+    }
+
     public static Map<UUID, List<UUID>>generateGraph(List<User> users) {
         UUID from; UUID to;
         int i; int ver;
